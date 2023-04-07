@@ -16,12 +16,12 @@ const triangleSideMarkPlugin = {
         const points: ISample[] = chart.getDatasetMeta(0).data.map(datapoint => ({x: datapoint.x, y: datapoint.y}))
         const ctx = chart.ctx;
         
-        const oSign = chart.scales.x.getValueForPixel(points[2].x)
-        const aSign = chart.scales.y.getValueForPixel(points[1].y)
+        const aSign = chart.scales.x.getValueForPixel(points[2].x)
+        const bSign = chart.scales.y.getValueForPixel(points[1].y)
 
-        const aOffsetX: number = -15 * Math.sign(oSign ? oSign : 0);
-        const hOffsetX: number = 15 * Math.sign(oSign ? oSign : 0) * Math.sign(aSign ? aSign : 0);
-        const oOffsetY: number = 15 * Math.sign(aSign ? aSign : 0);
+        const aOffsetX: number = -15 * Math.sign(aSign ? aSign : 0);
+        const cOffsetX: number = 15 * Math.sign(aSign ? aSign : 0) * Math.sign(bSign ? bSign : 0);
+        const bOffsetY: number = 15 * Math.sign(bSign ? bSign : 0);
 
 
         ctx.save();
@@ -41,7 +41,7 @@ const triangleSideMarkPlugin = {
 
         const opposite: ISample = {
             x: (points[0].x + points[2].x) / 2,
-            y: (points[0].y + points[2].y) / 2 + oOffsetY,
+            y: (points[0].y + points[2].y) / 2 + bOffsetY,
         }
 
 
@@ -75,7 +75,7 @@ const triangleSideMarkPlugin = {
         ctx.textAlign = "center";
         ctx.fillText("a", opposite.x, opposite.y);
         ctx.fillText("b", adjacent.x, adjacent.y);
-        ctx.fillText("c", -hUnitVector.x * hOffsetX + hypotenuse.x, -hUnitVector.y * hOffsetX + hypotenuse.y);
+        ctx.fillText("c", -hUnitVector.x * cOffsetX + hypotenuse.x, -hUnitVector.y * cOffsetX + hypotenuse.y);
 
         ctx.restore();
     }
@@ -90,6 +90,7 @@ const getAngle = (pointA: ISample, pointB: ISample, pointC: ISample): number => 
   return Math.acos((AB**2 + BC**2 - AC**2) / (2 * AB * BC))
 }
 
+
 const triangleAngleMarkPlugin = {
     id: "triangleAngleMarkPlugin",
     afterDraw: (chart: Chart<any>, args: any, options: IOptions['plugins']['triangleSideMarkPlugin']) => {
@@ -100,26 +101,26 @@ const triangleAngleMarkPlugin = {
 
         ctx.strokeStyle = 'rgba(209, 120, 65, 0.8)';
 
-        const oValue = chart.scales.x.getValueForPixel(points[2].x)
-        const oSign = Math.sign((oValue ? oValue : 0))
+        const aValue = chart.scales.x.getValueForPixel(points[2].x)
+        const aSign: number = Math.sign((aValue ? aValue : 0))
 
-        const aValue = chart.scales.y.getValueForPixel(points[1].y)
-        const aSign = Math.sign((aValue ? aValue : 0))
+        const bValue = chart.scales.y.getValueForPixel(points[1].y)
+        const bSign: number = Math.sign((bValue ? bValue : 0))
 
-        const angle = getAngle(points[0], points[1], points[2])
-
-        if(aSign > 0) {
-          var beginAngle: number = Math.PI/2 - (angle * oSign);
-          var endAngle: number = Math.PI/2;
-        }
-        else {
-          var beginAngle: number = Math.PI * (3/2)
-          var endAngle: number = Math.PI * (3/2) + (angle * oSign);
-        }
-        
+        const bcAngle = getAngle(points[0], points[1], points[2])
         ctx.beginPath();
-        ctx.arc(points[1].x, points[1].y, 50, beginAngle, endAngle, oSign < 0);
+        ctx.arc(points[1].x, points[1].y, 50, Math.PI/2 - Number(bSign < 0) * Math.PI, Math.PI/2 - Number(bSign < 0) * Math.PI - (bcAngle * aSign * bSign), aSign * bSign > 0) // b-c angle
         ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(points[0].x, points[0].y, 50, Math.PI*(3/2) * bSign, Math.PI*(3/2) * bSign + (Math.PI/2 * bSign * aSign), bSign * aSign < 0) // b-a angle
+        ctx.stroke()
+
+        const acAngle = getAngle(points[1], points[2], points[0])
+        ctx.beginPath();
+        ctx.arc(points[2].x, points[2].y, 50, Math.PI - Number(aSign < 0) * Math.PI, Math.PI - (Number(aSign < 0) * Math.PI) + (acAngle * bSign * aSign), bSign * aSign < 0) // c-a angle
+        ctx.stroke()
+
     }
 }
 
