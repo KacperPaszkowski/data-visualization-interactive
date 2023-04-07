@@ -41,7 +41,7 @@ const isInsideCircle = (sample: ISample): boolean => (
 
 function PiMonteCarlo(props: PiMonteCarloProps) {
     const maxSamples: number = props.maxSamples;
-    const [numberOfSamples, setNumberOfSamples] = useState<number>(1);
+    const [numberOfSamples, setNumberOfSamples] = useState<number>(Math.round(maxSamples / 2));
     const [samples, setSamples] = useState<ISample[]>([]);
     const chartRef = useRef<Chart<"scatter"> | null>(null);
 
@@ -82,7 +82,7 @@ function PiMonteCarlo(props: PiMonteCarloProps) {
             <Typography>Number of samples</Typography>
 
             <Slider 
-              defaultValue={0} 
+              defaultValue={numberOfSamples} 
               min={1}
               step={1}
               max={maxSamples} 

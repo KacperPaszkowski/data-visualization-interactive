@@ -27,7 +27,11 @@ const defaultProps: Partial<LinearRegressionProps> = {
 
 function LinearRegression(props: LinearRegressionProps) {
     const [samplePreview, setSamplePreview] = useState<ISample | undefined>(undefined);
-    const [samples, setSamples] = useState<ISample[] | undefined>([]);
+    const [samples, setSamples] = useState<ISample[]>([
+      {x: -0.6, y: -0.4},
+      {x: 0, y: 0.1},
+      {x: 0.7, y: 0.3}
+    ]);
     const [fittedLine, setFittedLine] = useState<number[]>([]);
     const chartRef = useRef<Chart<"scatter"> | null>(null);
 
@@ -46,7 +50,6 @@ function LinearRegression(props: LinearRegressionProps) {
     }
 
     const fitLine = () => {
-        if(!samples) return
         if(!(samples.length >= 2)) return
 
         const result = regression.linear(samples.map((sample) => ([sample.x, sample.y])))
@@ -54,8 +57,8 @@ function LinearRegression(props: LinearRegressionProps) {
     }
 
     useEffect(() => {
-        if(samples) data.datasets[0].data = samples
         if(samplePreview) data.datasets[1].data = [samplePreview]
+        data.datasets[0].data = samples
         data.datasets[2].data = fittedLine
         // @ts-ignore ( scatter/line mismatch )
         chartRef.current ? chartRef.current.data = data : {}
