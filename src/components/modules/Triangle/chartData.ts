@@ -20,9 +20,7 @@ const triangleSideMarkPlugin = {
         const aSign = chart.scales.y.getValueForPixel(points[1].y)
 
         const aOffsetX: number = -15 * Math.sign(oSign ? oSign : 0);
-
         const hOffsetX: number = 15 * Math.sign(oSign ? oSign : 0) * Math.sign(aSign ? aSign : 0);
-
         const oOffsetY: number = 15 * Math.sign(aSign ? aSign : 0);
 
 
@@ -85,6 +83,13 @@ const triangleSideMarkPlugin = {
 
 ChartJS.register(triangleSideMarkPlugin)
 
+const getAngle = (pointA: ISample, pointB: ISample, pointC: ISample): number => {
+  const AB: number = getDistance(pointA, pointB)
+  const BC: number = getDistance(pointB, pointC)
+  const AC: number = getDistance(pointA, pointC)
+  return Math.acos((AB**2 + BC**2 - AC**2) / (2 * AB * BC))
+}
+
 const triangleAngleMarkPlugin = {
     id: "triangleAngleMarkPlugin",
     afterDraw: (chart: Chart<any>, args: any, options: IOptions['plugins']['triangleSideMarkPlugin']) => {
@@ -95,9 +100,25 @@ const triangleAngleMarkPlugin = {
 
         ctx.strokeStyle = 'rgba(209, 120, 65, 0.8)';
 
-        const angle = Math.acos((getDistance(points[0], points[1])**2 + getDistance(points[1], points[2])**2 - getDistance(points[2], points[0])**2) / (2 * getDistance(points[0], points[1]) * getDistance(points[1], points[2])))
+        const oValue = chart.scales.x.getValueForPixel(points[2].x)
+        const oSign = Math.sign((oValue ? oValue : 0))
+
+        const aValue = chart.scales.y.getValueForPixel(points[1].y)
+        const aSign = Math.sign((aValue ? aValue : 0))
+
+        const angle = getAngle(points[0], points[1], points[2])
+
+        if(aSign > 0) {
+          var beginAngle: number = Math.PI/2 - (angle * oSign);
+          var endAngle: number = Math.PI/2;
+        }
+        else {
+          var beginAngle: number = Math.PI * (3/2)
+          var endAngle: number = Math.PI * (3/2) + (angle * oSign);
+        }
+        
         ctx.beginPath();
-        ctx.arc(points[1].x, points[1].y, 50, Math.PI/2-angle, Math.PI/2);
+        ctx.arc(points[1].x, points[1].y, 50, beginAngle, endAngle, oSign < 0);
         ctx.stroke();
     }
 }
