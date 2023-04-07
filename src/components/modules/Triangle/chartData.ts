@@ -90,6 +90,29 @@ const getAngle = (pointA: ISample, pointB: ISample, pointC: ISample): number => 
   return Math.acos((AB**2 + BC**2 - AC**2) / (2 * AB * BC))
 }
 
+const getBisector = (pointA: ISample, pointB: ISample, pointC: ISample) => {
+  const aVector = {
+    x: (pointC.x - pointB.x) / getDistance(pointB, pointC),
+    y: (pointC.y - pointB.y) / getDistance(pointB, pointC),
+  }
+
+  const bVector = {
+    x: (pointA.x - pointB.x) / getDistance(pointB, pointA),
+    y: (pointA.y - pointB.y) / getDistance(pointB, pointA),
+  }
+
+  const bisectorVector = {
+    x: (aVector.x + bVector.x),
+    y: (aVector.y + bVector.y),
+  }
+
+  const bisectorUnitVector = {
+    x: bisectorVector.x / Math.sqrt(bisectorVector.x**2 + bisectorVector.y**2),
+    y: bisectorVector.y / Math.sqrt(bisectorVector.x**2 + bisectorVector.y**2),
+  }
+
+  return bisectorUnitVector
+}
 
 const triangleAngleMarkPlugin = {
     id: "triangleAngleMarkPlugin",
@@ -108,19 +131,51 @@ const triangleAngleMarkPlugin = {
         const bSign: number = Math.sign((bValue ? bValue : 0))
 
         const bcAngle = getAngle(points[0], points[1], points[2])
+        const acAngle = getAngle(points[1], points[2], points[0])
+
+        const bcRadius = getDistance(points[1], points[0])/3
         ctx.beginPath();
-        ctx.arc(points[1].x, points[1].y, 50, Math.PI/2 - Number(bSign < 0) * Math.PI, Math.PI/2 - Number(bSign < 0) * Math.PI - (bcAngle * aSign * bSign), aSign * bSign > 0) // b-c angle
+        ctx.arc(
+          points[1].x, 
+          points[1].y, 
+          bcRadius, 
+          Math.PI/2 - Number(bSign < 0) * Math.PI, 
+          Math.PI/2 - Number(bSign < 0) * Math.PI - (bcAngle * aSign * bSign), 
+          aSign * bSign > 0) // b-c angle
         ctx.stroke();
 
+        const baRadius = Math.min(getDistance(points[0], points[1])/4, getDistance(points[0], points[2])/4) 
         ctx.beginPath();
-        ctx.arc(points[0].x, points[0].y, 50, Math.PI*(3/2) * bSign, Math.PI*(3/2) * bSign + (Math.PI/2 * bSign * aSign), bSign * aSign < 0) // b-a angle
+        ctx.arc(
+          points[0].x, 
+          points[0].y,
+          baRadius, 
+          Math.PI*(3/2) * bSign, 
+          Math.PI*(3/2) * bSign + (Math.PI/2 * bSign * aSign), 
+          bSign * aSign < 0) // b-a angle
         ctx.stroke()
 
-        const acAngle = getAngle(points[1], points[2], points[0])
+        const acRadius = getDistance(points[2], points[0])/3
         ctx.beginPath();
-        ctx.arc(points[2].x, points[2].y, 50, Math.PI - Number(aSign < 0) * Math.PI, Math.PI - (Number(aSign < 0) * Math.PI) + (acAngle * bSign * aSign), bSign * aSign < 0) // c-a angle
+        ctx.arc(
+          points[2].x, 
+          points[2].y, 
+          acRadius, 
+          Math.PI - Number(aSign < 0) * Math.PI, 
+          Math.PI - (Number(aSign < 0) * Math.PI) + (acAngle * bSign * aSign), 
+          bSign * aSign < 0) // c-a angle
         ctx.stroke()
 
+        const bcBisectorUnitVector = getBisector(points[0], points[1], points[2])
+        const acBisectorUnitVector = getBisector(points[1], points[2], points[0])
+
+        ctx.fillStyle = 'white';
+        ctx.font = "25px serif";
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "center";
+        ctx.fillText("β", points[1].x + bcBisectorUnitVector.x * bcRadius * 0.7, points[1].y + bcBisectorUnitVector.y * bcRadius * 0.7);
+        ctx.fillText("α", points[2].x + acBisectorUnitVector.x * acRadius * 0.7, points[2].y + acBisectorUnitVector.y * acRadius * 0.7);
+        ctx.restore()
     }
 }
 
