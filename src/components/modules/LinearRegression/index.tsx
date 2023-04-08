@@ -98,7 +98,7 @@ function LinearRegression(props: LinearRegressionProps) {
               style={{ display: 'inline-block' }}
             />
 
-            <Button 
+            {/* <Button 
               variant='contained' 
               color='primary'
               onClick={() => {
@@ -107,7 +107,7 @@ function LinearRegression(props: LinearRegressionProps) {
             }} 
               > 
                 Reset
-            </Button>
+            </Button> */}
         </div>
       </>
      );

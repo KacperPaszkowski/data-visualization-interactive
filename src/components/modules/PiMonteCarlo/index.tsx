@@ -79,9 +79,9 @@ function PiMonteCarlo(props: PiMonteCarloProps) {
               ref={chartRef}
             />
 
-            <Typography>Number of samples</Typography>
+            {/* <Typography>Number of samples</Typography> */}
 
-            <Slider 
+            {/* <Slider 
               defaultValue={numberOfSamples} 
               min={1}
               step={1}
@@ -104,7 +104,7 @@ function PiMonteCarlo(props: PiMonteCarloProps) {
                 setSamples(generateNewSamples(maxSamples))
               }> 
                 Generate new samples
-            </Button>
+            </Button> */}
         </div>
       </>
      );

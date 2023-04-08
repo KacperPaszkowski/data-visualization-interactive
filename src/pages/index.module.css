@@ -1,0 +1,11 @@
+.rightContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.leftContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
