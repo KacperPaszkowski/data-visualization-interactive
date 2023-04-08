@@ -18,20 +18,22 @@ interface ISample{
 interface LinearRegressionProps{
     width: number;
     height: number;
+    samples: ISample[];
 }
 
 const defaultProps: Partial<LinearRegressionProps> = {
     width: 300,
     height: 300,
+    samples: [
+      {x: -0.6, y: -0.4},
+      {x: 0, y: 0.1},
+      {x: 0.7, y: 0.3}
+    ],
 }
 
 function LinearRegression(props: LinearRegressionProps) {
     const [samplePreview, setSamplePreview] = useState<ISample | undefined>(undefined);
-    const [samples, setSamples] = useState<ISample[]>([
-      {x: -0.6, y: -0.4},
-      {x: 0, y: 0.1},
-      {x: 0.7, y: 0.3}
-    ]);
+    const [samples, setSamples] = useState<ISample[] | undefined>(props.samples);
     const [fittedLine, setFittedLine] = useState<number[]>([]);
     const chartRef = useRef<Chart<"scatter"> | null>(null);
 
@@ -45,24 +47,28 @@ function LinearRegression(props: LinearRegressionProps) {
     }
 
     const handleChartClick = (event: React.MouseEvent) => {
+        if(!samples) return
         if(!samplePreview) return
         setSamples((oldSamples) => [...(oldSamples ? oldSamples : []), samplePreview])
     }
 
     const fitLine = () => {
-        if(!(samples.length >= 2)) return
+      if(!samples) return
+      if(!(samples.length >= 2)) return
 
-        const result = regression.linear(samples.map((sample) => ([sample.x, sample.y])))
-        setFittedLine([-result.equation[0] + result.equation[1], result.equation[0] + result.equation[1]])
+      const result = regression.linear(samples.map((sample) => ([sample.x, sample.y])))
+      setFittedLine([-result.equation[0] + result.equation[1], result.equation[0] + result.equation[1]])
     }
 
     useEffect(() => {
-        if(samplePreview) data.datasets[1].data = [samplePreview]
-        data.datasets[0].data = samples
-        data.datasets[2].data = fittedLine
-        // @ts-ignore ( scatter/line mismatch )
-        chartRef.current ? chartRef.current.data = data : {}
-        chartRef.current?.update()
+      if(!samples) return
+      if(samplePreview) data.datasets[1].data = [samplePreview]
+    
+      data.datasets[0].data = samples
+      data.datasets[2].data = fittedLine
+      // @ts-ignore ( scatter/line mismatch )
+      chartRef.current ? chartRef.current.data = data : {}
+      chartRef.current?.update()
 
     }, [samplePreview, samples, fittedLine])
 
@@ -91,7 +97,6 @@ function LinearRegression(props: LinearRegressionProps) {
               height={props.height}
               style={{ display: 'inline-block' }}
             />
-            <Typography>Click on chart to add new sample</Typography>
 
             <Button 
               variant='contained' 

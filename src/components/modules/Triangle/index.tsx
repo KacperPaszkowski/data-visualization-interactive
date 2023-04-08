@@ -17,15 +17,16 @@ Chart.register(ChartJSdragDataPlugin)
 interface TriangleProps{
     width: number;
     height: number;
+    onChange: (pointA: ISample, pointB: ISample, pointC: ISample) => void
 }
 
 const defaultProps: Partial<TriangleProps> = {
     width: 300,
     height: 300,
+    onChange: () => {}
 }
 
 function Triangle(props: TriangleProps) {
-    const [samples, setSamples] = useState<ISample[]>([]);
     const chartRef = useRef<Chart<"scatter"> | null>(null);
 
     const handleMouseMove = (event: ChartEvent, elements: any, chart: any) => {
@@ -52,12 +53,19 @@ function Triangle(props: TriangleProps) {
         
     }
 
+    const handleChange = () => {
+        if(!chartRef.current) return;
+
+        const data = (chartRef.current.data.datasets[0].data as ISample[])
+        props.onChange(data[0], data[1], data[2])
+    }
+
     useEffect(() => {
         if(!chartRef.current) return;
 
         let previousOptions: unknown = chartRef.current.options;
         (previousOptions as IOptions).onHover = handleMouseMove;
-
+        (previousOptions as IOptions).plugins.dragData.onDrag = handleChange
     }, [chartRef.current])
 
     return ( 
@@ -76,16 +84,6 @@ function Triangle(props: TriangleProps) {
               style={{ display: 'inline-block'}}
               ref={chartRef}
             />
-
-            <Typography>Triangle</Typography>
-
-           
-            <Button 
-              variant='contained' 
-              color='primary'
-            > 
-                Generate new samples
-            </Button>
         </div>
       </>
      );

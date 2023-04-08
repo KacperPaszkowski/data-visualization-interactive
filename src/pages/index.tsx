@@ -18,7 +18,7 @@ export default function Home() {
       
       <PiMonteCarlo width={500} height={500} maxSamples={2000} onChange={() => {}}/>
       <LinearRegression width={500} height={500}/>
-      <Triangle width={500} height={500}/>
+      <Triangle width={500} height={500} onChange={console.log}/>
     </>
   )
 }
