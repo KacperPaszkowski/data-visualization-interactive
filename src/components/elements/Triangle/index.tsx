@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button'
 import styles from './Triangle.module.css'
-import { Line, Scatter } from 'react-chartjs-2';
+import { Scatter } from 'react-chartjs-2';
 import { data, options } from './chartData';
 import { ISample, IOptions } from './types';
 // @ts-ignore

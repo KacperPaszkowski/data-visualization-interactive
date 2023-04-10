@@ -20,8 +20,9 @@
     position: relative;
     flex-grow: 1;
     margin: 10px;
-    padding: 20px;
+    padding: 50px;
     height: auto;
+
 }
 
 .descriptionContrainer{

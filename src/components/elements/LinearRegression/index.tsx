@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button'
 import styles from './LinearRegression.module.css'
 import regression from 'regression'
 import { data, options } from './chartData';
-import { Chart as ChartReact, Scatter } from 'react-chartjs-2';
+import { Scatter } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
@@ -53,8 +50,8 @@ function LinearRegression(props: LinearRegressionProps) {
     }
 
     const fitLine = () => {
-      if(!samples) return
-      if(!(samples.length >= 2)) return
+      if(!samples) {setFittedLine([]); return}
+      if(!(samples.length >= 2)) {setFittedLine([]); return}
 
       const result = regression.linear(samples.map((sample) => ([sample.x, sample.y])))
       setFittedLine([-result.equation[0] + result.equation[1], result.equation[0] + result.equation[1]])
@@ -75,6 +72,11 @@ function LinearRegression(props: LinearRegressionProps) {
     useEffect(() => {
         fitLine()
     }, [samples])
+
+    useEffect(() => {
+      setSamples(props.samples)
+      fitLine()
+    }, [props.samples])
 
     return ( 
         <>
@@ -97,17 +99,6 @@ function LinearRegression(props: LinearRegressionProps) {
               height={props.height}
               style={{ display: 'inline-block' }}
             />
-
-            {/* <Button 
-              variant='contained' 
-              color='primary'
-              onClick={() => {
-                setSamples([])
-                setFittedLine([])
-            }} 
-              > 
-                Reset
-            </Button> */}
         </div>
       </>
      );
