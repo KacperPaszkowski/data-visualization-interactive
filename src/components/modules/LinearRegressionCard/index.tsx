@@ -26,10 +26,10 @@ export default function LinearRegressionCard() {
             className={styles.description}
             >
             <Typography variant='body1'>
-                Linear regression is a simple technique used to find a relationship between a target variable and one or more input variables. 
-                It helps us predict the target variable based on the input variables. 
-                In simple terms, it's like drawing a straight line that best fits the data points. 
-                This method is widely used for forecasting trends and understanding how variables are connected.
+                {"Linear regression is a simple technique used to find a relationship between a target variable and one or more input variables. " +
+                "It helps us predict the target variable based on the input variables. " +
+                "In simple terms, it's like drawing a straight line that best fits the data points. " +
+                "This method is widely used for forecasting trends and understanding how variables are connected."}
             </Typography>
             <Typography 
               variant='body1'
