@@ -9,3 +9,5 @@ All examples are interactive and can be found [here](https://interactive-visuali
 - Typescript
 - Material UI
 - ChartJS
+
+App is running on [Vercel](https://vercel.com/ "Vercel")
